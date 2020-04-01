@@ -1,0 +1,45 @@
+sudo: false
+language: python
+
+python:
+  - "3.5"
+  - "3.6"
+  - "3.7"
+  - "3.8"
+  - "3.9-dev"
+  - "nightly"
+
+matrix:
+  fast_finish: true
+  include:
+    - env: TOXENV=qa
+      python: "3.7"
+
+  allow_failures:
+    - python: "3.9-dev"
+    - python: "nightly"
+    - env: TOXENV=qa
+
+
+install: pip install tox-travis python-coveralls codecov
+
+script: tox
+after_success:
+  - codecov
+
+
+deploy:
+  provider: pypi
+  twine_version: 3.1.1
+  user: __token__
+  password:
+    # travis encrypt pypi-...
+    # https://docs.travis-ci.com/user/encryption-keys/
+    secure: ''
+  on:
+    python: 3.7
+    skip_existing: true
+    tags: true
+    distributions: sdist bdist_wheel
+    repo: Apkawa/pytest-image-diff
+    branch: master
