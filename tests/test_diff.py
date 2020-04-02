@@ -3,8 +3,8 @@ import pytest
 from PIL import Image, ImageDraw
 
 
-def make_test_image(text="Hello world"):
-    img = Image.new('RGB', (100, 30), color=(73, 109, 137))
+def make_test_image(text="Hello world", size=(100, 30)):
+    img = Image.new('RGB', size, color=(73, 109, 137))
 
     d = ImageDraw.Draw(img)
     d.text((10, 10), text, fill=(255, 255, 0))
@@ -32,3 +32,9 @@ def test_fail_regression(image_regression):
     image_regression(make_test_image("Foo"))
     pytest.raises(AssertionError,
                   image_regression, make_test_image("Bar"))
+
+
+def test_fail_regression_diffirent_size(image_regression):
+    image_regression(make_test_image("Foo"))
+    pytest.raises(AssertionError,
+                  image_regression, make_test_image("Foo", size=(200, 200)))
