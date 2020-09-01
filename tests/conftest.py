@@ -1,2 +1,2 @@
 
-pytest_plugins = ['pytest_image_diff.plugin']
+# pytest_plugins = ['pytest_image_diff.plugin']

@@ -7,6 +7,8 @@
 [![PyPi Python versions](https://img.shields.io/pypi/pyversions/pytest-image-diff.svg)](https://pypi.python.org/pypi/pytest-image-diff)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
+# pytest-image-diff
+
 # Installation
 
 ```bash

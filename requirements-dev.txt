@@ -9,8 +9,7 @@ pytest>=4,<5
 pytest-pythonpath==0.7.3
 pytest-flake8==1.0.4
 pytest-cov==2.8.1
-pytest-mypy
-mock==3.0.5
+mmock==3.0.5
 
 # Docs
 

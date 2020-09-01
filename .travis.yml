@@ -2,7 +2,6 @@ sudo: false
 language: python
 
 python:
-  - "3.5"
   - "3.6"
   - "3.7"
   - "3.8"
@@ -31,6 +30,9 @@ after_success:
 deploy:
   provider: pypi
   twine_version: 3.1.1
+  skip_existing: true
+  distributions: sdist bdist_wheel
+
   user: __token__
   password:
     # travis encrypt pypi-...
@@ -38,8 +40,6 @@ deploy:
     secure: ''
   on:
     python: 3.7
-    skip_existing: true
     tags: true
-    distributions: sdist bdist_wheel
     repo: Apkawa/pytest-image-diff
     branch: master

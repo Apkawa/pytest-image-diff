@@ -51,7 +51,7 @@ setup(
     author="Apkawa",
     author_email='apkawa@gmail.com',
     packages=[package for package in find_packages() if package.startswith(app_name)],
-    python_requires='>=3.5, <4',
+    python_requires='>=3.6, <4',
     entry_points={
         'pytest11': [
             'image_diff = pytest_image_diff.plugin',
