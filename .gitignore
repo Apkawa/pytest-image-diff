@@ -4,6 +4,7 @@ tmp/
 *.py[cod]
 Pipfile*
 .tests
+.mypy_cache
 image_diff_reference
 
 # C extensions
