@@ -59,6 +59,7 @@ setup(
     },
     install_requires=[
         'pytest',
+        'typing_extensions',
         'diffimg',
         "imgdiff",
     ],
