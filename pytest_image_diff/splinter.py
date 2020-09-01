@@ -13,6 +13,7 @@ except ImportError:
 
 from ._types import ScreenshotRegressionCallableType, ImageRegressionCallableType
 
+__all__ = ['screenshot_regression']
 
 @pytest.fixture(scope="function")
 def screenshot_regression(

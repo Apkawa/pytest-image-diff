@@ -10,7 +10,7 @@ from .helpers import get_test_info, build_filename, image_save, ensure_dirs
 from .image_diff import _diff
 
 try:
-    from . import splinter
+    from .splinter import *
 except ImportError:
     pass
 

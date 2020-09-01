@@ -1,6 +1,8 @@
 sudo: false
 language: python
 
+dist: xenial
+
 python:
   - "3.6"
   - "3.7"
@@ -11,6 +13,10 @@ python:
 matrix:
   fast_finish: true
   include:
+    - env: TOXENV=splinter
+      python: "3.7"
+      addons:
+        chrome: stable
     - env: TOXENV=qa
       python: "3.7"
     - env: TOXENV=type
@@ -37,9 +43,7 @@ deploy:
 
   user: __token__
   password:
-    # travis encrypt pypi-...
-    # https://docs.travis-ci.com/user/encryption-keys/
-    secure: ''
+    secure: "P2Unui+hGiGw0dKDjZ7q13t2G63jh2LUbFLxNQzUAOnFrtqRn36yHXN424z108bTq8Q4GUDH9x08dgOVE9M5mDwJriNHz2FQdTKK21fN1ORyOkfDAmcKUSC0yhRPvZCfQGk+4Ea0O3fq1RWJNSLbRxBdIS2Mhkrg4FOdDQIWBMZdE2N0UXXowyMV4ih2wD/ysFch5P7LJGrkDa1Edt103p3VPfClNVv+OIDX6V3AN/6+XO2UERlbfpGOBfheXwXCb3fEVOxSqHM76/rlm0Opy6FHJSzrM1aSBc+5eP/I5YAnf0TbMblAREtVPn20a8g2jzKfxLUR/9HGn0sqouoWnLEabjmYH7AZ8aOpp3cdltRMdSHj0u5zmdsv265hBAgS3ky9UAg4ngJaECykIYKSkVS1lfOBz0JZKpRgFzgP9/aQxR92Tuu6RJBb+ZYr42btPReM2aWs+TjCdl8o6NO6X0QPKLrDADKP0phGx5b8+P82dFaJMu3/qBuYbzdMVOtW+PCH0g5h9N/xkQKZtwWlkvGcNa5/oIeWDYTJzk37rsI74dPeCTUYzmsFrtmP4MIDjldAyNb/ZUdiJbo7ZtPDeTW0hayDlfFQ9S73BMrmaZw2y2DY2xTe33MD2Ei7oixMwUV2vX99qbpa09beJmmT19EKsV5S7bz06kHe+mmgdGU="
   on:
     python: 3.7
     tags: true
