@@ -72,8 +72,5 @@ def _diff(ref_path: PathOrFileType, image_path: PathOrFileType, diff_path: PathO
         delete_diff_file=True,
         ignore_alpha=True)
 
-    if not os.path.exists(os.path.dirname(diff_path)):
-        os.makedirs(os.path.dirname(diff_path))
-
     make_highlights(ref_path, image_path, diff_path)
     return threshold

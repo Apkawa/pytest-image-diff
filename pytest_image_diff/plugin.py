@@ -1,6 +1,6 @@
 import os
 from tempfile import NamedTemporaryFile
-from typing import Optional, NamedTuple, Callable
+from typing import Optional, NamedTuple, cast, Callable, Type
 
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -9,6 +9,19 @@ from ._types import ImageFileType, ImageRegressionCallableType, ImageDiffCallabl
 from .helpers import get_test_info, build_filename, image_save, ensure_dirs
 from .image_diff import _diff
 
+try:
+    from . import splinter
+except ImportError:
+    pass
+
+
+@pytest.fixture(scope='session')
+def image_diff_threshold() -> float:
+    """
+    Set default threshold differences of images. By default - 0.001
+    """
+    return 0.001
+
 
 @pytest.fixture(scope='session')
 def image_diff_root(request: FixtureRequest) -> str:
@@ -16,14 +29,6 @@ def image_diff_root(request: FixtureRequest) -> str:
     Root path for storing diff images. By default - `request.config.rootdir`
     """
     return str(request.config.rootdir)
-
-
-@pytest.fixture(scope='session')
-def image_diff_threshold() -> float:
-    """
-    Threshold differences of images. By default - 0.001
-    """
-    return 0.001
 
 
 @pytest.fixture(scope='session')  # pragma: no cover
@@ -48,18 +53,25 @@ class DiffInfo(NamedTuple):
     reference_name: str
 
 
-DiffInfoCallable = Callable[[ImageFileType, str], DiffInfo]
+DiffInfoCallableType = Callable[[ImageFileType, Optional[str]], DiffInfo]
 
 
 @pytest.fixture(scope="function")
 def _image_diff_info(
     request: FixtureRequest,
     image_diff_reference_dir: str,
-    image_diff_dir: str) -> DiffInfoCallable:
-    def _factory(image: ImageFileType, suffix: str = '') -> DiffInfo:
+    image_diff_dir: str) -> DiffInfoCallableType:
+    """
+    For internal use
+    """
+
+    def _factory(image: ImageFileType, suffix: Optional[str] = None) -> DiffInfo:
         test_info = get_test_info(request)
         class_name = test_info.class_name
         test_name = test_info.test_name
+        if suffix is None:
+            # Todo enumerate every call
+            suffix = ''
 
         reference_dir = os.path.join(image_diff_reference_dir, class_name)
         screenshot_dir = os.path.join(image_diff_dir, class_name)
@@ -81,7 +93,8 @@ def _image_diff_info(
 
 
 @pytest.fixture(scope="function")
-def image_regression(_image_diff_info,
+def image_regression(request: FixtureRequest,
+                     _image_diff_info: DiffInfoCallableType,
                      image_diff_threshold: float) -> ImageRegressionCallableType:
     """
     Check regression image.
@@ -90,9 +103,10 @@ def image_regression(_image_diff_info,
     :param suffix: str, need for multiple checks  by one test
     :return: bool
     """
+
     def _factory(image: ImageFileType,
                  threshold: float = image_diff_threshold,
-                 suffix: str = '') -> bool:
+                 suffix: Optional[str] = None) -> bool:
         diff_info = _image_diff_info(image, suffix)
         reference_name = diff_info.reference_name
         diff_name = diff_info.diff_name
@@ -102,22 +116,27 @@ def image_regression(_image_diff_info,
             image_save(image, reference_name)
             return True
 
+        def _cleanup() -> None:
+            for f in [image_name, diff_name]:
+                if os.path.exists(f):
+                    os.unlink(f)
+
+        request.addfinalizer(_cleanup)
+
+        ensure_dirs(diff_name)
         ensure_dirs(image_name)
         image_save(image, image_name)
         diff_ratio = _diff(reference_name, image_name, diff_name)
         assert diff_ratio <= threshold, "Image not equals!"
 
-        # Todo clean empty dirs
-        for f in [image_name, diff_name]:
-            if os.path.exists(f):
-                os.unlink(f)
         return True
 
     return _factory
 
 
 @pytest.fixture(scope="function")
-def image_diff(_image_diff_info,
+def image_diff(request: FixtureRequest,
+               _image_diff_info: DiffInfoCallableType,
                image_diff_threshold: float) -> ImageDiffCallableType:
     """
     Compare two image
@@ -127,25 +146,30 @@ def image_diff(_image_diff_info,
     :param suffix: str, need for multiple checks  by one test
     :return: bool
     """
+
     def _factory(image: ImageFileType,
                  image_2: ImageFileType,
-                 threshold: Optional[float] = image_diff_threshold,
-                 diff_path: Optional[str] = None,
-                 suffix: Optional[str] = '') -> str:
+                 threshold: float = image_diff_threshold,
+                 suffix: Optional[str] = None) -> bool:
         image_temp_file = NamedTemporaryFile(suffix='.jpg')
         image_2_temp_file = NamedTemporaryFile(suffix='.jpg')
-        if not diff_path:
-            _info = _image_diff_info(image, suffix)
-            diff_path = _info.diff_name
+
+        _info = _image_diff_info(image, suffix)
+        diff_path = cast(str, _info.diff_name)
+
+        ensure_dirs(diff_path)
+
+        def _cleanup() -> None:
+            for f in [diff_path]:
+                if os.path.exists(f):
+                    os.unlink(f)
+
+        request.addfinalizer(_cleanup)
 
         image_save(image, path=image_temp_file.name)
         image_save(image_2, path=image_2_temp_file.name)
         diff_ratio = _diff(image_temp_file.name, image_2_temp_file.name, diff_path)
         assert diff_ratio <= threshold, "Image not equals! See %s" % diff_path
-        # Todo clean empty dirs
-        for f in [diff_path]:
-            if os.path.exists(f):
-                os.unlink(f)
-        return diff_path
+        return True
 
     return _factory

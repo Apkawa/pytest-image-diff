@@ -14,11 +14,13 @@ def make_test_image(text="Hello world", size=(100, 30)) -> Image:
 
     return img
 
+
 def test_initial_diff(image_diff, image_diff_dir):
     if os.path.exists(image_diff_dir):
         shutil.rmtree(image_diff_dir)
     image = make_test_image()
     image_diff(image, image)
+
 
 def test_diff(image_diff):
     image = make_test_image()
@@ -28,6 +30,7 @@ def test_diff(image_diff):
 def test_fail_diff(image_diff):
     pytest.raises(AssertionError,
                   image_diff, make_test_image("Foo"), make_test_image("Bar"))
+    pass
 
 
 def test_regression(image_regression):
