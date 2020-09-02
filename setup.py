@@ -63,6 +63,12 @@ setup(
         'diffimg',
         "imgdiff",
     ],
+    extras_require={
+      'splinter': [
+          'pytest-splinter>=2.1.0',
+          'chromedriver-binary==2.40.1',
+      ]
+    },
     zip_safe=False,
     include_package_data=True,
     keywords=['pytest'],

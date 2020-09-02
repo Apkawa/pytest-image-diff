@@ -28,11 +28,11 @@ matrix:
     - env: TOXENV=qa
 
 
-install: pip install tox-travis python-coveralls codecov
+install: pip install tox-travis codecov
 
 script: tox
 after_success:
-  - codecov
+  - codecov -e TOXENV
 
 
 deploy:
