@@ -1,4 +1,3 @@
-import os
 from io import BytesIO
 from typing import cast
 
@@ -40,7 +39,11 @@ def resize_canvas(im: Image, new_size: ImageSize) -> BytesIO:
     return fp
 
 
-def _diff(ref_path: PathOrFileType, image_path: PathOrFileType, diff_path: PathOrFileType) -> float:
+def _diff(
+    ref_path: PathOrFileType,
+    image_path: PathOrFileType,
+    diff_path: PathOrFileType
+) -> float:
     ref_im = Image.open(ref_path)
     im = Image.open(image_path)
 

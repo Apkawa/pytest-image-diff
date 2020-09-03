@@ -26,7 +26,7 @@ class TestInfo:
     @staticmethod
     def get_test_info(request: FixtureRequest, suffix: str = '', prefix: str = '') -> "TestInfo":
         try:
-            names = junitxml.mangle_testnames(request.node.nodeid.split("::"))
+            names = junitxml.mangle_testnames(request.node.nodeid.split("::"))  # type: ignore
         except AttributeError:
             # pytest>=2.9.0
             names = junitxml.mangle_test_address(request.node.nodeid)

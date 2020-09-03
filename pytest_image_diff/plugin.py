@@ -4,19 +4,21 @@ from typing import Optional, NamedTuple, cast, Callable
 
 import pytest
 from _pytest.fixtures import FixtureRequest
+from _pytest.python import Function
+from _pytest.runner import CallInfo
 
 from ._types import ImageFileType, ImageRegressionCallableType, ImageDiffCallableType
 from .helpers import get_test_info, build_filename, image_save, ensure_dirs
 from .image_diff import _diff
 
 try:
-    from .splinter import *
+    from .splinter import *  # noqa
 except ImportError:
     pass
 
 
-@pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(item, call):
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)  # type: ignore
+def pytest_runtest_makereport(item: Function, call: CallInfo) -> None:
     # execute all other hooks to obtain the report object
     outcome = yield
     rep = outcome.get_result()
@@ -72,7 +74,8 @@ DiffInfoCallableType = Callable[[ImageFileType, Optional[str]], DiffInfo]
 def _image_diff_info(
     request: FixtureRequest,
     image_diff_reference_dir: str,
-    image_diff_dir: str) -> DiffInfoCallableType:
+    image_diff_dir: str
+) -> DiffInfoCallableType:
     """
     For internal use
     """
@@ -142,7 +145,7 @@ def image_regression(request: FixtureRequest,
         ensure_dirs(image_name)
         image_save(image, image_name)
         diff_ratio = _diff(reference_name, image_name, diff_name)
-        assert diff_ratio <= threshold, "Image not equals!"
+        assert diff_ratio <= threshold, "Image not equals!"  # noqa
 
         return True
 
@@ -187,7 +190,7 @@ def image_diff(request: FixtureRequest,
         image_save(image, path=image_temp_file.name)
         image_save(image_2, path=image_2_temp_file.name)
         diff_ratio = _diff(image_temp_file.name, image_2_temp_file.name, diff_path)
-        assert diff_ratio <= threshold, "Image not equals! See %s" % diff_path
+        assert diff_ratio <= threshold, "Image not equals! See %s" % diff_path  # noqa
         return True
 
     return _factory
