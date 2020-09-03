@@ -27,11 +27,9 @@ def test_diff(image_diff):
     image_diff(image, image)
 
 
-def test_fail_diff(image_diff):
+def test_fail_diff(image_diff, image_diff_dir):
     pytest.raises(AssertionError,
                   image_diff, make_test_image("Foo"), make_test_image("Bar"))
-    pass
-
 
 def test_regression(image_regression):
     image = make_test_image()

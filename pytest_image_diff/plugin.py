@@ -1,6 +1,6 @@
 import os
 from tempfile import NamedTemporaryFile
-from typing import Optional, NamedTuple, cast, Callable, Type
+from typing import Optional, NamedTuple, cast, Callable
 
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -13,6 +13,18 @@ try:
     from .splinter import *
 except ImportError:
     pass
+
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    # execute all other hooks to obtain the report object
+    outcome = yield
+    rep = outcome.get_result()
+
+    # set a report attribute for each phase of a call, which can
+    # be "setup", "call", "teardown"
+
+    setattr(item, "rep_" + rep.when, rep)
 
 
 @pytest.fixture(scope='session')
@@ -117,6 +129,9 @@ def image_regression(request: FixtureRequest,
             return True
 
         def _cleanup() -> None:
+            if request.node.rep_setup.passed and request.node.rep_call.failed:
+                # Do not cleanup regression artifacts
+                return
             for f in [image_name, diff_name]:
                 if os.path.exists(f):
                     os.unlink(f)
@@ -160,6 +175,9 @@ def image_diff(request: FixtureRequest,
         ensure_dirs(diff_path)
 
         def _cleanup() -> None:
+            if request.node.rep_setup.passed and request.node.rep_call.failed:
+                # Do not cleanup regression artifacts
+                return
             for f in [diff_path]:
                 if os.path.exists(f):
                     os.unlink(f)
