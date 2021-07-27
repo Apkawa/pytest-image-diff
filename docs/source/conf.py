@@ -12,22 +12,23 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath("../.."))
 
 
 # -- Project information -----------------------------------------------------
 
 
 project = "pytest-image-diff"
-copyright = "2020, Apkawa <apkawa@gmail.com"
+copyright = "2016, Apkawa <apkawa@gmail.com"
 author = "Apkawa <apkawa@gmail.com"
 
 # The short X.Y version
-version = "0.0"
+version = "0.4"
 # The full version, including alpha/beta/rc tags
-release = "0.0.5"
+release = "0.4.0"
 
 # -- General configuration ---------------------------------------------------
 
@@ -38,10 +39,23 @@ release = "0.0.5"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["m2r"]
+extensions = [
+    "sphinx.ext.todo",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.autodoc",
+    "sphinx_autodoc_typehints",
+    "sphinx_paramlinks",
+    "m2r2",
+]
+
+autodoc_member_order = "bysource"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
+
+from recommonmark.parser import CommonMarkParser
+
+source_parsers = {".md": CommonMarkParser}
 
 source_suffix = [".rst", ".md"]
 
@@ -63,12 +77,12 @@ exclude_patterns = []
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
 
+
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-# html_theme = 'alabaster'
 html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -96,7 +110,7 @@ html_static_path = ["_static"]
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = " pytest-image-diffdoc"
+htmlhelp_basename = project + "doc"
 
 # -- Options for LaTeX output ------------------------------------------------
 
@@ -119,22 +133,14 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (
-        master_doc,
-        " pytest-image-diff.tex",
-        " pytest-image-diff Documentation",
-        "Apkawa",
-        "manual",
-    )
+    (master_doc, project + ".tex", project + " Documentation", "Apkawa", "manual")
 ]
 
 # -- Options for manual page output ------------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, " pytest-image-diff", " pytest-image-diff Documentation", [author], 1)
-]
+man_pages = [(master_doc, project, project + " Documentation", [author], 1)]
 
 # -- Options for Texinfo output ----------------------------------------------
 
@@ -144,10 +150,10 @@ man_pages = [
 texinfo_documents = [
     (
         master_doc,
-        " pytest-image-diff",
-        " pytest-image-diff Documentation",
+        project,
+        project + " Documentation",
         author,
-        "pytest-image-diff",
+        project,
         "One line description of project.",
         "Miscellaneous",
     )
@@ -158,7 +164,7 @@ from recommonmark.transform import AutoStructify
 
 # At the bottom of conf.py
 def setup(app):
-    git_doc_root = "https://githib.com/Apkawa/pytest-image-diff/blob/master/docs/"
+    git_doc_root = "https://githib.com/Apkawa/%s/blob/master/docs/" % project
     app.add_config_value(
         "recommonmark_config",
         {

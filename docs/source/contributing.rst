@@ -1,0 +1,4 @@
+Contributors
+============
+
+.. mdinclude:: ../../CONTRIBUTING.md

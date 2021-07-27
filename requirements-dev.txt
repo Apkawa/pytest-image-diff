@@ -12,11 +12,13 @@ mock==3.0.5
 
 # Docs
 
-Sphinx
+Sphinx>=4.0
 #alabaster
-sphinx_rtd_theme
-recommonmark
-m2r
+sphinx_rtd_theme>=0.5.2
+recommonmark>=0.7.1
+m2r2
+sphinx-autodoc-typehints
+sphinx-paramlinks
 
 # QA
 pre-commit==2.13.0

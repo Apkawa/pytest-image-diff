@@ -48,7 +48,7 @@ def image_diff_root(request: FixtureRequest) -> str:
 @pytest.fixture(scope="session")  # pragma: no cover
 def image_diff_dir(image_diff_root: str) -> str:
     """
-    Path for store diff images. by default - '.tests/image_diff/'
+    Path for store diff images. by default - '{image_diff_root}.tests/image_diff/'
     """
     return os.path.join(image_diff_root, ".tests/image_diff/")
 
@@ -112,6 +112,7 @@ def image_regression(
 ) -> Generator[ImageRegressionCallableType, None, None]:
     """
     Check regression image.
+
     :param image: `PIL.Image` or `PathLike` or `io.BinaryIO`
     :param threshold: float, by default from `image_diff_threshold`
     :param suffix: str, need for multiple checks  by one test
@@ -163,6 +164,7 @@ def image_diff(
 ) -> Generator[ImageDiffCallableType, None, None]:
     """
     Compare two image
+
     :param image: `PIL.Image` or `PathLike` or `io.BinaryIO`
     :param image2: `PIL.Image` or `PathLike` or `io.BinaryIO`
     :param threshold: float, by default from `image_diff_threshold`
