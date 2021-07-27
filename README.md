@@ -39,10 +39,3 @@ def test_regression(image_regression):
     image: Image or str or bytes = Image.new()
     image_regression(image)
 ```
-
-
-
-
-
-
-

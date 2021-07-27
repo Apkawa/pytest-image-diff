@@ -11,16 +11,16 @@ from pytest_image_diff._types import PathOrFileType, ImageSize, OrientationType
 class ImgDiffOpts:
     border: int = 0
     spacing: int = 3
-    bgcolor: str = '#FFF'
-    sepcolor: str = '#CCC'
+    bgcolor: str = "#FFF"
+    sepcolor: str = "#CCC"
     opacity: int = 64
-    orientation: OrientationType = 'auto'
+    orientation: OrientationType = "auto"
     timeout: int = 10
 
 
-def make_highlights(ref_path: PathOrFileType,
-                    image_path: PathOrFileType,
-                    diff_path: PathOrFileType) -> Image:
+def make_highlights(
+    ref_path: PathOrFileType, image_path: PathOrFileType, diff_path: PathOrFileType
+) -> Image:
     ref_img = Image.open(ref_path).convert("RGB")
     img = Image.open(image_path).convert("RGB")
     opts = ImgDiffOpts()
@@ -40,9 +40,7 @@ def resize_canvas(im: Image, new_size: ImageSize) -> BytesIO:
 
 
 def _diff(
-    ref_path: PathOrFileType,
-    image_path: PathOrFileType,
-    diff_path: PathOrFileType
+    ref_path: PathOrFileType, image_path: PathOrFileType, diff_path: PathOrFileType
 ) -> float:
     ref_im = Image.open(ref_path)
     im = Image.open(image_path)
@@ -71,9 +69,8 @@ def _diff(
             image_path = resize_canvas(im, _im_new_size)
 
     threshold: float = diff(
-        ref_path, image_path,
-        delete_diff_file=True,
-        ignore_alpha=True)
+        ref_path, image_path, delete_diff_file=True, ignore_alpha=True
+    )
 
     make_highlights(ref_path, image_path, diff_path)
     return threshold

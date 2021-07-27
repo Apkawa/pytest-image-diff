@@ -1,34 +1,50 @@
-# Contributing
-
-## Setup
-
-```bash
-python3 -m venv ~/.virtualenv/pytest-image-diff/
-source ~/.virtualenv/pytest-image-diff/bin/activate
-pip install -r requirements-dev.txt
-```
 
 ## Run tests
-
 ```bash
-pytest
-tox
+pip install -r requirements.txt
+pytest # run tests
+tox # run test matrix
 ```
 
-## Build docs
-```
-python setup.py build_sphinx
-```
+## Run tests with pyenv with specific python and pypy
 
-## Bump version
-
-```bash
-python setup.py bumpversion
+```shell
+pyenv install 3.10-dev pypy3.7-7.3.5
+pyenv local 3.10-dev pypy3.7-7.3.5
+pip install -r requirements.txt
+tox -e py310,pypy3
 ```
 
-## Publish pypi
+## Type checks
 
-```bash
-python setup.py publish
+```shell
+tox -e type
 ```
 
+## Lint code
+
+```shell
+tox -e qa
+```
+
+
+## Before commit
+
+Install git hook
+
+```shell
+pip install -r requirements.txt
+
+pre-commit install
+```
+
+For pycharm needs install `tox` to global
+
+
+## Docs
+
+```shell
+pip install -r requirements.txt
+cd docs
+make html
+```

@@ -11,14 +11,14 @@ except ImportError:
 
 from ._types import ScreenshotRegressionCallableType, ImageRegressionCallableType
 
-__all__ = ['screenshot_regression']
+__all__ = ["screenshot_regression"]
 
 
 @pytest.fixture(scope="function")
 def screenshot_regression(
     browser: Browser,
     image_regression: ImageRegressionCallableType,
-    image_diff_threshold: float
+    image_diff_threshold: float,
 ) -> ScreenshotRegressionCallableType:
     """
     Check regression browser screenshot
@@ -26,9 +26,10 @@ def screenshot_regression(
     :param suffix: str, need for multiple checks  by one test
     """
 
-    def _factory(threshold: float = image_diff_threshold,
-                 suffix: Optional[str] = '') -> bool:
-        tf = NamedTemporaryFile(suffix='.png')
+    def _factory(
+        threshold: float = image_diff_threshold, suffix: Optional[str] = ""
+    ) -> bool:
+        tf = NamedTemporaryFile(suffix=".png")
         image = tf.name
         browser.driver.save_screenshot(image)
         return image_regression(image, threshold, suffix)
