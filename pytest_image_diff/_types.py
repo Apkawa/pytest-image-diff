@@ -1,4 +1,4 @@
-from typing import BinaryIO, Union, Tuple, Callable, Optional
+from typing import BinaryIO, Union, Tuple, Optional
 
 from PIL.Image import Image
 from typing_extensions import Literal, Protocol
@@ -6,8 +6,6 @@ from typing_extensions import Literal, Protocol
 PathOrFileType = Union[str, bytes, BinaryIO]
 ImageFileType = Union[Image, PathOrFileType]
 ImageSize = Tuple[int, int]
-
-ScreenshotRegressionCallableType = Callable[[float, Optional[str]], bool]
 
 
 class ImageRegressionCallableType(Protocol):

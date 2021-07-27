@@ -1,4 +1,5 @@
 import os
+
 import pytest
 
 try:
@@ -35,3 +36,15 @@ def splinter_webdriver_executable(request, splinter_webdriver):
 @with_splinter
 def test_splinter_fixture(screenshot_regression):
     assert screenshot_regression
+
+
+HTML_FILE = os.path.join(os.path.dirname(__file__), "files/example.html")
+
+
+@with_splinter
+def test_splinter(browser, screenshot_regression):
+    browser.driver.set_window_size(1280, 1024)
+    browser.visit("file://" + HTML_FILE)
+    screenshot_regression()
+    browser.driver.set_window_size(800, 600)
+    screenshot_regression(suffix="small_window")

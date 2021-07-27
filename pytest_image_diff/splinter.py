@@ -1,7 +1,8 @@
-from tempfile import NamedTemporaryFile
-from typing import Optional
-
 import pytest
+from tempfile import NamedTemporaryFile
+from typing import Optional, Generator
+from typing_extensions import Protocol
+
 
 try:
     # Check pytest-splinter
@@ -9,7 +10,18 @@ try:
 except ImportError:
     raise
 
-from ._types import ScreenshotRegressionCallableType, ImageRegressionCallableType
+from ._types import ImageRegressionCallableType
+
+
+class ScreenshotRegressionCallableType(Protocol):
+    def __call__(
+        self,
+        browser: Optional[Browser] = None,
+        threshold: Optional[float] = None,
+        suffix: Optional[str] = None,
+    ) -> bool:
+        pass
+
 
 __all__ = ["screenshot_regression"]
 
@@ -19,19 +31,29 @@ def screenshot_regression(
     browser: Browser,
     image_regression: ImageRegressionCallableType,
     image_diff_threshold: float,
-) -> ScreenshotRegressionCallableType:
+) -> Generator[ScreenshotRegressionCallableType, None, None]:
     """
     Check regression browser screenshot
+
+    :param browser: optional, by default from `browser` fixture
     :param threshold: float, by default from `image_diff_threshold`
     :param suffix: str, need for multiple checks  by one test
     """
+    default_browser = browser
 
     def _factory(
-        threshold: float = image_diff_threshold, suffix: Optional[str] = ""
+        browser: Optional[Browser] = None,
+        threshold: Optional[float] = None,
+        suffix: Optional[str] = "",
     ) -> bool:
+        if browser is None:
+            browser = default_browser
+
+        if threshold is None:
+            threshold = image_diff_threshold
         tf = NamedTemporaryFile(suffix=".png")
         image = tf.name
         browser.driver.save_screenshot(image)
         return image_regression(image, threshold, suffix)
 
-    return _factory
+    yield _factory
