@@ -22,13 +22,13 @@ sys.path.insert(0, os.path.abspath("../.."))
 
 
 project = "pytest-image-diff"
-copyright = "2016, Apkawa <apkawa@gmail.com"
+copyright = "2020, Apkawa <apkawa@gmail.com"
 author = "Apkawa <apkawa@gmail.com"
 
 # The short X.Y version
-version = "0.4"
+version = "0.0"
 # The full version, including alpha/beta/rc tags
-release = "0.4.0"
+release = "0.0.6"
 
 # -- General configuration ---------------------------------------------------
 
