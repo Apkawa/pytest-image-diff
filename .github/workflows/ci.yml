@@ -44,10 +44,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install tox python-coveralls codecov
+          pip install tox codecov
       - name: Run tests
         run: tox
-      - uses: codecov/codecov-action@v1
+      - name: Upload coverage to codecov
+        uses: codecov/codecov-action@v1
         with:
           env_vars: OS,PYTHON,TOXENV
 
