@@ -2,8 +2,6 @@
 [![ci](https://github.com/Apkawa/pytest-image-diff/actions/workflows/ci.yml/badge.svg)](https://github.com/Apkawa/pytest-image-diff/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/pytest-image-diff/badge/?version=latest)](https://pytest-image-diff.readthedocs.io/en/latest/?badge=latest)
 [![Codecov](https://codecov.io/gh/Apkawa/pytest-image-diff/branch/master/graph/badge.svg)](https://codecov.io/gh/Apkawa/pytest-image-diff)
-[![Requirements Status](https://requires.io/github/Apkawa/pytest-image-diff/requirements.svg?branch=master)](https://requires.io/github/Apkawa/pytest-image-diff/requirements/?branch=master)
-[![PyUP](https://pyup.io/repos/github/Apkawa/pytest-image-diff/shield.svg)](https://pyup.io/repos/github/Apkawa/pytest-image-diff)
 [![PyPi Python versions](https://img.shields.io/pypi/pyversions/pytest-image-diff.svg)](https://pypi.python.org/pypi/pytest-image-diff)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 

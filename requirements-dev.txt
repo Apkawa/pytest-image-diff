@@ -5,10 +5,8 @@ tox
 twine
 
 # Tests
-pytest>=4,<5
-pytest-pythonpath==0.7.3
-pytest-cov==2.8.1
-mock==3.0.5
+pytest>=6,<7
+pytest-cov==2.12.1
 
 # Docs
 
