@@ -1,4 +1,5 @@
 import os
+import tempfile
 
 import pytest
 
@@ -38,13 +39,14 @@ def test_splinter_fixture(screenshot_regression):
     assert screenshot_regression
 
 
-HTML_FILE = os.path.join(os.path.dirname(__file__), "files/example.html")
-
-
 @with_splinter
 def test_splinter(browser, screenshot_regression):
+    tf = tempfile.NamedTemporaryFile(suffix=".html")
+    tf.write(b"<html><body><h1>Example</h1></body></html>")
+    tf.flush()
+
     browser.driver.set_window_size(1280, 1024)
-    browser.visit("file://" + HTML_FILE)
+    browser.visit("file://" + tf.name)
     screenshot_regression()
     browser.driver.set_window_size(800, 600)
     screenshot_regression(suffix="small_window")
