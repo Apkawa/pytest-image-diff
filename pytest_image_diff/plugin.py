@@ -12,7 +12,7 @@ from .helpers import get_test_info, build_filename, image_save, ensure_dirs
 from .image_diff import _diff
 
 try:
-    from .splinter import *  # noqa
+    from .splinter import screenshot_regression  # noqa
 except ImportError:
     pass
 

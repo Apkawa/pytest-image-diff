@@ -12,6 +12,14 @@ from pytest_image_diff._types import ImageFileType
 def build_filename(
     name: str, suffix: str = "", prefix: str = "", max_length: int = 128
 ) -> str:
+    """
+    >>> build_filename("name")
+    'name'
+    >>> build_filename("name", "suffix", "prefix")
+    'prefix-name-suffix'
+    >>> build_filename("loooooooong_nameeeeee", "suffix", max_length=20)
+    'loooooooo-suffix'
+    """
     return "-".join(
         filter(
             None, [prefix, name[: max_length - len(suffix) - len(prefix) - 5], suffix]
@@ -32,9 +40,9 @@ class TestInfo:
         request: FixtureRequest, suffix: str = "", prefix: str = ""
     ) -> "TestInfo":
         try:
-            names = junitxml.mangle_testnames(
+            names = junitxml.mangle_testnames(  # type: ignore
                 request.node.nodeid.split("::")
-            )  # type: ignore
+            )  #
         except AttributeError:
             # pytest>=2.9.0
             names = junitxml.mangle_test_address(request.node.nodeid)
