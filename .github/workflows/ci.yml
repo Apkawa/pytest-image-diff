@@ -3,6 +3,9 @@ name: ci
 on:
   push:
   pull_request:
+  schedule:
+    # Weekly
+    - cron: "* * * * 0"
 
 jobs:
   test:
@@ -11,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ 3.6, 3.7, 3.8, 3.9]
+        python-version: [ 3.7, 3.8, 3.9, "3.10"]
         toxenv: [""]
         experimental: [ false ]
         include:
@@ -25,7 +28,7 @@ jobs:
             experimental: false
             python-version: 3.7
           - experimental: true
-            python-version: "3.10.0-beta.2 - 3.10"
+            python-version: "3.11.0-alpha - 3.11"
           - experimental: true
             python-version: "pypy-3.7"
 
@@ -76,6 +79,7 @@ jobs:
           --sdist
           --wheel
           --outdir dist/
+
       - name: Publish distribution to Test PyPI
         if: github.ref == 'refs/heads/master'
         uses: pypa/gh-action-pypi-publish@master
@@ -90,3 +94,12 @@ jobs:
         with:
           skip_existing: true
           password: ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: ${{ !github.event.schedule && startsWith(github.ref, 'refs/tags') }}
+        with:
+          draft: true
+          generate_release_notes: true
+          files: |
+            dist/*.whl
