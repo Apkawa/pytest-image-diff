@@ -5,7 +5,7 @@ on:
   pull_request:
   schedule:
     # Weekly
-    - cron: "* * * * 0"
+    - cron: "0 0 * * 0"
 
 jobs:
   test:
