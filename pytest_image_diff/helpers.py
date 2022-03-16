@@ -1,6 +1,9 @@
 import os
+import pathlib
 import shutil
 import typing
+from contextlib import contextmanager
+from tempfile import NamedTemporaryFile
 
 from PIL.Image import Image
 from _pytest import junitxml
@@ -25,6 +28,19 @@ def build_filename(
             None, [prefix, name[: max_length - len(suffix) - len(prefix) - 5], suffix]
         )
     )
+
+
+@contextmanager
+def temp_file(suffix: typing.Optional[str] = None) -> typing.Iterator[pathlib.Path]:
+    with NamedTemporaryFile(suffix=suffix, delete=False) as tf:
+        temp_image_path = pathlib.Path(tf.name)
+    try:
+        yield temp_image_path
+    finally:
+        try:
+            temp_image_path.unlink()
+        except FileNotFoundError:
+            pass
 
 
 class TestInfo:
@@ -58,13 +74,13 @@ def get_test_info(
     return TestInfo.get_test_info(request, suffix, prefix)
 
 
-def image_save(image: ImageFileType, path: str) -> None:
+def image_save(image: ImageFileType, path: typing.Union[str, pathlib.Path]) -> None:
     if isinstance(image, Image):
         image.save(path)
     elif isinstance(image, str):
         if not os.path.exists(image):
             raise ValueError("Image maybe path. Path not exists!")
-        shutil.copyfile(image, path)
+        shutil.copyfile(image, str(path))
     elif hasattr(image, "read"):
         with open(path, "wb") as f:
             image = typing.cast(typing.BinaryIO, image)
