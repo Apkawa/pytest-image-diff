@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-20.04", "windows-latest"]
+        os: [ubuntu-20.04]
         python-version: [ 3.7, 3.8, 3.9, "3.10"]
         toxenv: [""]
         experimental: [ false ]
@@ -20,19 +20,31 @@ jobs:
           - toxenv: qa
             python-version: 3.7
             experimental: false
+            os: ubuntu-20.04
           - toxenv: type
             python-version: 3.7
             experimental: false
+            os: ubuntu-20.04
           - toxenv: splinter
             experimental: false
             python-version: 3.7
+            os: ubuntu-20.04
+          - toxenv: splinter
+            experimental: false
+            python-version: 3.7
+            os: windows-latest
+          - experimental: false
+            python-version: "3.9"
+            os: windows-latest
           - experimental: true
             python-version: "3.11.0-alpha - 3.11"
+            os: ubuntu-20.04
           - experimental: true
             python-version: "pypy-3.7"
+            os: ubuntu-20.04
 
     runs-on: ${{ matrix.os }}
-    name: "python ${{ matrix.python-version }} ${{ matrix.toxenv }}"
+    name: "python ${{ matrix.python-version }} ${{ matrix.os }} ${{ matrix.toxenv }}"
 
     continue-on-error: ${{ matrix.experimental }}
     env:
