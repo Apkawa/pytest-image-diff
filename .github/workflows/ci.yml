@@ -9,11 +9,10 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
-    name: "python ${{ matrix.python-version }} ${{ matrix.toxenv }}"
     strategy:
       fail-fast: false
       matrix:
+        os: ["ubuntu-20.04", "windows-latest"]
         python-version: [ 3.7, 3.8, 3.9, "3.10"]
         toxenv: [""]
         experimental: [ false ]
@@ -32,6 +31,8 @@ jobs:
           - experimental: true
             python-version: "pypy-3.7"
 
+    runs-on: ${{ matrix.os }}
+    name: "python ${{ matrix.python-version }} ${{ matrix.toxenv }}"
 
     continue-on-error: ${{ matrix.experimental }}
     env:
