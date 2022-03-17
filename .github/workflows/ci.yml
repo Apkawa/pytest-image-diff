@@ -16,6 +16,7 @@ jobs:
         python-version: [ 3.7, 3.8, 3.9, "3.10"]
         toxenv: [""]
         experimental: [ false ]
+        chrome: ["stable"]
         include:
           - toxenv: qa
             python-version: 3.7
@@ -33,6 +34,7 @@ jobs:
             experimental: false
             python-version: 3.7
             os: windows-latest
+            chrome: "959969"
           - experimental: false
             python-version: "3.9"
             os: windows-latest
@@ -53,9 +55,9 @@ jobs:
       # chrome headless
       - uses: browser-actions/setup-chrome@latest
         with:
-          chrome-version: 957103
+          chrome-version: ${{ matrix.chrome }}
       - uses: actions/checkout@v2
-      - name: Set up python ${{ matrix.python-version}}
+      - name: Set up python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
