@@ -50,3 +50,14 @@ def test_splinter(browser, screenshot_regression):
     screenshot_regression()
     browser.driver.set_window_size(800, 600)
     screenshot_regression(suffix="small_window")
+
+
+@with_splinter
+def test_splinter_with_xpath(browser, screenshot_regression):
+    tf = tempfile.NamedTemporaryFile(suffix=".html")
+    tf.write(b"<html><body><h1>Example</h1></body></html>")
+    tf.flush()
+
+    browser.driver.set_window_size(1280, 1024)
+    browser.visit("file://" + tf.name)
+    screenshot_regression(xpath="//h1")

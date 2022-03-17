@@ -9,29 +9,47 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
-    name: "python ${{ matrix.python-version }} ${{ matrix.toxenv }}"
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-20.04]
         python-version: [ 3.7, 3.8, 3.9, "3.10"]
         toxenv: [""]
         experimental: [ false ]
+        chrome: ["stable"]
         include:
           - toxenv: qa
             python-version: 3.7
             experimental: false
+            os: ubuntu-20.04
           - toxenv: type
             python-version: 3.7
             experimental: false
-          - toxenv: splinter
+            os: ubuntu-20.04
+          - toxenv: splinter-linux
             experimental: false
             python-version: 3.7
+            os: ubuntu-20.04
+
+          - toxenv: splinter-windows
+            # Do not support selenium-windows
+            experimental: true
+            python-version: 3.7
+            os: windows-latest
+            chrome: "959905"
+
+          - experimental: false
+            python-version: "3.9"
+            os: windows-latest
           - experimental: true
             python-version: "3.11.0-alpha - 3.11"
+            os: ubuntu-20.04
           - experimental: true
             python-version: "pypy-3.7"
+            os: ubuntu-20.04
 
+    runs-on: ${{ matrix.os }}
+    name: "${{ matrix.os }} python ${{ matrix.python-version }} ${{ matrix.toxenv }}"
 
     continue-on-error: ${{ matrix.experimental }}
     env:
@@ -39,8 +57,10 @@ jobs:
     steps:
       # chrome headless
       - uses: browser-actions/setup-chrome@latest
+        with:
+          chrome-version: ${{ matrix.chrome }}
       - uses: actions/checkout@v2
-      - name: Set up python ${{ matrix.python-version}}
+      - name: Set up python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}

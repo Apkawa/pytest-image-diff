@@ -1,9 +1,10 @@
+from pathlib import Path
 from typing import BinaryIO, Union, Tuple, Optional
 
 from PIL.Image import Image
 from typing_extensions import Literal, Protocol
 
-PathOrFileType = Union[str, bytes, BinaryIO]
+PathOrFileType = Union[str, bytes, Path, BinaryIO]
 ImageFileType = Union[Image, PathOrFileType]
 ImageSize = Tuple[int, int]
 

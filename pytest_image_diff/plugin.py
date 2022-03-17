@@ -1,5 +1,4 @@
 import os
-from tempfile import NamedTemporaryFile
 from typing import Optional, NamedTuple, cast, Callable, Generator
 
 import pytest
@@ -8,7 +7,7 @@ from _pytest.python import Function
 from _pytest.runner import CallInfo
 
 from ._types import ImageFileType, ImageRegressionCallableType, ImageDiffCallableType
-from .helpers import get_test_info, build_filename, image_save, ensure_dirs
+from .helpers import get_test_info, build_filename, image_save, ensure_dirs, temp_file
 from .image_diff import _diff
 
 try:
@@ -18,7 +17,7 @@ except ImportError:
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)  # type: ignore
-def pytest_runtest_makereport(item: Function, call: CallInfo) -> None:
+def pytest_runtest_makereport(item: Function, call: CallInfo):  # type: ignore
     # execute all other hooks to obtain the report object
     outcome = yield
     rep = outcome.get_result()
@@ -180,8 +179,6 @@ def image_diff(
     ) -> bool:
         if threshold is None:
             threshold = image_diff_threshold
-        image_temp_file = NamedTemporaryFile(suffix=".jpg")
-        image_2_temp_file = NamedTemporaryFile(suffix=".jpg")
 
         _info = _image_diff_info(image, suffix)
         diff_path = cast(str, _info.diff_name)
@@ -198,9 +195,12 @@ def image_diff(
 
         request.addfinalizer(_cleanup)
 
-        image_save(image, path=image_temp_file.name)
-        image_save(image_2, path=image_2_temp_file.name)
-        diff_ratio = _diff(image_temp_file.name, image_2_temp_file.name, diff_path)
+        with temp_file(suffix=".jpg") as image_temp_file, temp_file(
+            suffix=".jpg"
+        ) as image_2_temp_file:
+            image_save(image, path=image_temp_file)
+            image_save(image_2, path=image_2_temp_file)
+            diff_ratio = _diff(image_temp_file, image_2_temp_file, diff_path)
         assert diff_ratio <= threshold, "Image not equals! See %s" % diff_path  # noqa
         return True
 
