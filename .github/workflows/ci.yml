@@ -25,11 +25,11 @@ jobs:
             python-version: 3.7
             experimental: false
             os: ubuntu-20.04
-          - toxenv: splinter
+          - toxenv: splinter-linux
             experimental: false
             python-version: 3.7
             os: ubuntu-20.04
-          - toxenv: splinter
+          - toxenv: splinter-windows
             experimental: false
             python-version: 3.7
             os: windows-latest
