@@ -34,7 +34,7 @@ jobs:
             experimental: false
             python-version: 3.7
             os: windows-latest
-            chrome: "959969"
+            chrome: "959905"
           - experimental: false
             python-version: "3.9"
             os: windows-latest
