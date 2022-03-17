@@ -73,4 +73,6 @@ def test_pytest_splinter(browser, screenshot_regression):
     # ... some interaction
     browser.click()
     screenshot_regression(suffix="success")
+    # you can use xpath expression for part of page
+    screenshot_regression(xpath="//h1")
 ```
