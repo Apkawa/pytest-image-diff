@@ -44,7 +44,7 @@ jobs:
             os: ubuntu-20.04
 
     runs-on: ${{ matrix.os }}
-    name: "python ${{ matrix.python-version }} ${{ matrix.os }} ${{ matrix.toxenv }}"
+    name: "${{ matrix.os }} python ${{ matrix.python-version }} ${{ matrix.toxenv }}"
 
     continue-on-error: ${{ matrix.experimental }}
     env:

@@ -54,7 +54,7 @@ setup(
     python_requires=">=3.6, <4",
     entry_points={"pytest11": ["image_diff = pytest_image_diff.plugin"]},
     install_requires=["pytest", "typing_extensions", "diffimg", "imgdiff"],
-    extras_require={"splinter": ["pytest-splinter>=2.1.0", "chromedriver-binary-auto"]},
+    extras_require={"splinter": ["pytest-splinter>=2.1.0"]},
     zip_safe=False,
     include_package_data=True,
     keywords=["pytest"],
