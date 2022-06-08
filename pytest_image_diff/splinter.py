@@ -1,10 +1,13 @@
 import os
-from typing import Optional, Generator
+from typing import Optional, Generator, TYPE_CHECKING
 
 import pytest
 from typing_extensions import Protocol
 
 from .helpers import temp_file
+
+if TYPE_CHECKING:
+    from .plugin import DiffCompareResult
 
 try:
     # Check pytest-splinter
@@ -15,6 +18,8 @@ except ImportError:
 if Browser:
     from ._types import ImageRegressionCallableType
 
+    __all__ = ["screenshot_regression"]
+
     class ScreenshotRegressionCallableType(Protocol):
         def __call__(
             self,
@@ -22,16 +27,15 @@ if Browser:
             threshold: Optional[float] = None,
             suffix: Optional[str] = None,
             xpath: Optional[str] = "",
-        ) -> bool:
+        ) -> "DiffCompareResult":
             pass
-
-    __all__ = ["screenshot_regression"]
 
     @pytest.fixture(scope="function")
     def screenshot_regression(
         browser: Browser,
         image_regression: ImageRegressionCallableType,
         image_diff_threshold: float,
+        image_diff_throw_exception: bool,
     ) -> Generator[ScreenshotRegressionCallableType, None, None]:
         """
         Check regression browser screenshot
@@ -49,12 +53,16 @@ if Browser:
             threshold: Optional[float] = None,
             suffix: Optional[str] = "",
             xpath: Optional[str] = "",
-        ) -> bool:
+            throw_exception: Optional[bool] = None,
+        ) -> "DiffCompareResult":
             if browser is None:
                 browser = default_browser
 
             if threshold is None:
                 threshold = image_diff_threshold
+
+            if throw_exception is None:
+                throw_exception = image_diff_throw_exception
 
             with temp_file(suffix=".png") as temp_image_path:
                 screenshot_path = os.fspath(temp_image_path)
@@ -75,7 +83,9 @@ if Browser:
                 else:
                     browser.driver.save_screenshot(screenshot_path)
 
-                result = image_regression(screenshot_path, threshold, suffix)
+                result = image_regression(
+                    screenshot_path, threshold, suffix, throw_exception=throw_exception
+                )
                 return result
 
         yield _factory

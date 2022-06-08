@@ -40,6 +40,45 @@ def test_regression(image_regression):
     image_regression(image, threshold=0.5)
 ```
 
+Also use with assert
+
+```python
+import pytest
+
+from typing import Union
+from PIL import Image
+
+@pytest.fixture(scope="session")
+def image_diff_throw_exception() -> bool:
+    """
+    Set default throw exception. By default - True
+    """
+    return False
+
+def test_compare(image_diff):
+    image: Image or str or bytes = Image.new()
+    image2: Image or str or bytes = '/path/to/image.jpeg'
+    assert image_diff(image, image2)
+    assert image_diff(image, image2, threshold=0.5)
+    # Also can check threshold in compare, ie
+    assert image_diff(image, image2) < 0.5
+    # For different checks in one test
+    assert image_diff(image, image2, threshold=0.5, suffix="one")
+    # Or without fixture image_diff_throw_exception
+    assert image_diff(image, image2, threshold=0.5, throw_exception=False)
+
+
+def test_regression(image_regression):
+    image: Union[Image, str, bytes] = Image.new()
+    assert image_regression(image, threshold=0.5)
+    # Also can check threshold in compare, ie
+    assert image_regression(image) < 0.5
+    # For different checks in one test
+    assert image_regression(image, threshold=0.5, suffix="foo")
+    # Or without fixture image_diff_throw_exception
+    assert image_regression(image, threshold=0.5, throw_exception=False)
+```
+
 First run creates reference images
 
 ## pytest-splinter

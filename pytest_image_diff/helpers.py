@@ -38,8 +38,12 @@ def temp_file(suffix: typing.Optional[str] = None) -> typing.Iterator[pathlib.Pa
         yield temp_image_path
     finally:
         try:
+            tf.close()
             temp_image_path.unlink()
         except FileNotFoundError:
+            pass
+        except PermissionError:
+            # Opps, windows issue
             pass
 
 
@@ -96,3 +100,8 @@ def ensure_dirs(filepath: str) -> None:
         file_dir = os.path.dirname(filepath)
         if not os.path.exists(file_dir):
             os.makedirs(file_dir)
+
+
+# def pytest_assertrepr_compare(config, op, left, right):
+#     print(op, left, right)
+#     pass

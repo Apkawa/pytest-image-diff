@@ -5,8 +5,8 @@ tox
 twine
 
 # Tests
-pytest>=6,<7
-pytest-cov==2.12.1
+pytest
+pytest-cov
 
 # Docs
 

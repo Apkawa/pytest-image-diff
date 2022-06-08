@@ -3,20 +3,17 @@ name: ci
 on:
   push:
   pull_request:
-  schedule:
-    # Weekly
-    - cron: "0 0 * * 0"
 
 jobs:
   test:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04]
-        python-version: [ 3.7, 3.8, 3.9, "3.10"]
-        toxenv: [""]
+        os: [ ubuntu-20.04 ]
+        python-version: [ 3.7, 3.8, 3.9, "3.10" ]
+        toxenv: [ "" ]
         experimental: [ false ]
-        chrome: ["stable"]
+        chrome: [ "stable" ]
         include:
           - toxenv: qa
             python-version: 3.7
@@ -36,7 +33,7 @@ jobs:
             experimental: true
             python-version: 3.7
             os: windows-latest
-            chrome: "959905"
+#            chrome: "959905"
 
           - experimental: false
             python-version: "3.9"
