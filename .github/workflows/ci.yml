@@ -9,11 +9,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04]
-        python-version: [ 3.7, 3.8, 3.9, "3.10"]
-        toxenv: [""]
+        os: [ ubuntu-20.04 ]
+        python-version: [ 3.7, 3.8, 3.9, "3.10" ]
+        toxenv: [ "" ]
         experimental: [ false ]
-        chrome: ["stable"]
+        chrome: [ "stable" ]
         include:
           - toxenv: qa
             python-version: 3.7
