@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
+import random
 import shutil
+import string
 
 import pytest
 from PIL import Image, ImageDraw
@@ -24,10 +26,9 @@ def image_diff_throw_exception() -> bool:
 
 
 def test_initial_diff(image_diff, image_diff_dir):
-    if os.path.exists(image_diff_dir):
-        shutil.rmtree(image_diff_dir)
+    suffix = "".join(random.choices(string.ascii_letters, k=10))
     image = make_test_image()
-    assert image_diff(image, image)
+    assert image_diff(image, image, suffix=suffix)
 
 
 def test_diff(image_diff):

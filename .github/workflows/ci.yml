@@ -33,7 +33,7 @@ jobs:
             experimental: true
             python-version: 3.7
             os: windows-latest
-            chrome: "959905"
+#            chrome: "959905"
 
           - experimental: false
             python-version: "3.9"
