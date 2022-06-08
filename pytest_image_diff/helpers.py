@@ -96,3 +96,8 @@ def ensure_dirs(filepath: str) -> None:
         file_dir = os.path.dirname(filepath)
         if not os.path.exists(file_dir):
             os.makedirs(file_dir)
+
+
+# def pytest_assertrepr_compare(config, op, left, right):
+#     print(op, left, right)
+#     pass

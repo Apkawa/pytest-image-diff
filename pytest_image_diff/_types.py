@@ -1,8 +1,11 @@
 from pathlib import Path
-from typing import BinaryIO, Union, Tuple, Optional
+from typing import BinaryIO, Union, Tuple, Optional, TYPE_CHECKING
+from typing_extensions import Literal, Protocol
 
 from PIL.Image import Image
-from typing_extensions import Literal, Protocol
+
+if TYPE_CHECKING:
+    from .plugin import DiffCompareResult
 
 PathOrFileType = Union[str, bytes, Path, BinaryIO]
 ImageFileType = Union[Image, PathOrFileType]
@@ -15,7 +18,8 @@ class ImageRegressionCallableType(Protocol):
         image: ImageFileType,
         threshold: Optional[float] = None,
         suffix: Optional[str] = None,
-    ) -> bool:
+        throw_exception: Optional[bool] = None,
+    ) -> "DiffCompareResult":
         pass
 
 
@@ -26,7 +30,8 @@ class ImageDiffCallableType(Protocol):
         image_2: ImageFileType,
         threshold: Optional[float] = None,
         suffix: Optional[str] = None,
-    ) -> bool:
+        throw_exception: Optional[bool] = None,
+    ) -> "DiffCompareResult":
         pass
 
 

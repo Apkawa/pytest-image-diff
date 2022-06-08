@@ -1,5 +1,5 @@
 import os
-from typing import Optional, NamedTuple, cast, Callable, Generator
+from typing import Optional, NamedTuple, cast, Callable, Generator, Union
 
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -37,11 +37,19 @@ def image_diff_threshold() -> float:
 
 
 @pytest.fixture(scope="session")
+def image_diff_throw_exception() -> bool:
+    """
+    Set default throw exception. By default - True
+    """
+    return True
+
+
+@pytest.fixture(scope="session")
 def image_diff_root(request: FixtureRequest) -> str:
     """
     Root path for storing diff images. By default - `request.config.rootdir`
     """
-    return str(request.config.rootdir)
+    return str(request.config.rootdir)  # type: ignore
 
 
 @pytest.fixture(scope="session")  # pragma: no cover
@@ -67,6 +75,37 @@ class DiffInfo(NamedTuple):
 
 
 DiffInfoCallableType = Callable[[ImageFileType, Optional[str]], DiffInfo]
+
+
+class DiffCompareResult:
+    value: float
+    thresh: float
+    diff_path: Optional[str]
+
+    CompareType = Union[int, float, "DiffCompareResult"]
+
+    def __init__(self, value: float, thresh: float, diff_path: Optional[str] = None):
+        self.value = value
+        self.thresh = thresh
+        self.diff_path = diff_path
+
+    def __repr__(self) -> str:
+        return f"diff: {round(self.value, 4)}; thresh: {self.thresh}; diff path: {self.diff_path}"
+
+    def __bool__(self) -> bool:
+        return self.value <= self.thresh
+
+    def __gt__(self, other: CompareType) -> bool:
+        return self.value > other
+
+    def __ge__(self, other: CompareType) -> bool:
+        return self.value >= other
+
+    def __lt__(self, other: CompareType) -> bool:
+        return self.value < other
+
+    def __le__(self, other: CompareType) -> bool:
+        return self.value <= other
 
 
 @pytest.fixture(scope="function")
@@ -108,6 +147,7 @@ def image_regression(
     request: FixtureRequest,
     _image_diff_info: DiffInfoCallableType,
     image_diff_threshold: float,
+    image_diff_throw_exception: bool,
 ) -> Generator[ImageRegressionCallableType, None, None]:
     """
     Check regression image.
@@ -122,9 +162,12 @@ def image_regression(
         image: ImageFileType,
         threshold: Optional[float] = None,
         suffix: Optional[str] = None,
-    ) -> bool:
+        throw_exception: Optional[bool] = None,
+    ) -> "DiffCompareResult":
         if threshold is None:
             threshold = image_diff_threshold
+        if throw_exception is None:
+            throw_exception = image_diff_throw_exception
         diff_info = _image_diff_info(image, suffix)
         reference_name = diff_info.reference_name
         diff_name = diff_info.diff_name
@@ -132,7 +175,7 @@ def image_regression(
         if not os.path.exists(reference_name):
             ensure_dirs(reference_name)
             image_save(image, reference_name)
-            return True
+            return DiffCompareResult(0, threshold)
 
         def _cleanup() -> None:
             if request.node.rep_setup.passed and request.node.rep_call.failed:
@@ -148,9 +191,10 @@ def image_regression(
         ensure_dirs(image_name)
         image_save(image, image_name)
         diff_ratio = _diff(reference_name, image_name, diff_name)
-        assert diff_ratio <= threshold, "Image not equals!"  # noqa
-
-        return True
+        cond = DiffCompareResult(diff_ratio, threshold, diff_name)
+        if throw_exception:
+            assert cond, "Image not equals!"  # noqa
+        return cond
 
     yield _factory
 
@@ -160,6 +204,7 @@ def image_diff(
     request: FixtureRequest,
     _image_diff_info: DiffInfoCallableType,
     image_diff_threshold: float,
+    image_diff_throw_exception: bool,
 ) -> Generator[ImageDiffCallableType, None, None]:
     """
     Compare two image
@@ -176,9 +221,12 @@ def image_diff(
         image_2: ImageFileType,
         threshold: Optional[float] = None,
         suffix: Optional[str] = None,
-    ) -> bool:
+        throw_exception: Optional[bool] = None,
+    ) -> DiffCompareResult:
         if threshold is None:
             threshold = image_diff_threshold
+        if throw_exception is None:
+            throw_exception = image_diff_throw_exception
 
         _info = _image_diff_info(image, suffix)
         diff_path = cast(str, _info.diff_name)
@@ -201,7 +249,9 @@ def image_diff(
             image_save(image, path=image_temp_file)
             image_save(image_2, path=image_2_temp_file)
             diff_ratio = _diff(image_temp_file, image_2_temp_file, diff_path)
-        assert diff_ratio <= threshold, "Image not equals! See %s" % diff_path  # noqa
-        return True
+        cond = DiffCompareResult(diff_ratio, threshold, diff_path)
+        if throw_exception:
+            assert cond, "Image not equals! See %s" % diff_path  # noqa
+        return cond
 
     yield _factory

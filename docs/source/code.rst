@@ -10,6 +10,8 @@ Config fixtures
 .. autofunction:: pytest_image_diff.plugin.image_diff_dir
 .. autofunction:: pytest_image_diff.plugin.image_diff_reference_dir
 
+.. autofunction:: pytest_image_diff.plugin.image_diff_throw_exception
+
 
 Fixtures
 --------
