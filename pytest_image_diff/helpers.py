@@ -38,8 +38,12 @@ def temp_file(suffix: typing.Optional[str] = None) -> typing.Iterator[pathlib.Pa
         yield temp_image_path
     finally:
         try:
+            tf.close()
             temp_image_path.unlink()
         except FileNotFoundError:
+            pass
+        except PermissionError:
+            # Opps, windows issue
             pass
 
 

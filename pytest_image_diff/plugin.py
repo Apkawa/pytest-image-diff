@@ -183,7 +183,11 @@ def image_regression(
                 return
             for f in [image_name, diff_name]:
                 if os.path.exists(f):
-                    os.unlink(f)
+                    try:
+                        os.unlink(f)
+                    except PermissionError:
+                        # Opps, have windows issue
+                        pass
 
         request.addfinalizer(_cleanup)
 
