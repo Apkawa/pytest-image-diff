@@ -1,4 +1,4 @@
-from pathlib import Path
+import pathlib
 from typing import BinaryIO, Union, Tuple, Optional, TYPE_CHECKING
 from typing_extensions import Literal, Protocol
 
@@ -7,7 +7,8 @@ from PIL.Image import Image
 if TYPE_CHECKING:
     from .plugin import DiffCompareResult
 
-PathOrFileType = Union[str, bytes, Path, BinaryIO]
+PathType = Union[str, pathlib.Path]
+PathOrFileType = Union[PathType, bytes, BinaryIO]
 ImageFileType = Union[Image, PathOrFileType]
 ImageSize = Tuple[int, int]
 

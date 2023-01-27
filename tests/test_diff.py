@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
+import pathlib
 import random
 import string
+import sys
+import tempfile
+from typing import Union
 
 import pytest
 from PIL import Image, ImageDraw
+
+from pytest_image_diff.helpers import image_save
 
 
 def make_test_image(text="Hello world", size=(100, 30)) -> Image:
@@ -13,6 +19,16 @@ def make_test_image(text="Hello world", size=(100, 30)) -> Image:
     d.text((10, 10), text, fill=(255, 255, 0))
 
     return img
+
+
+@pytest.mark.skipif(sys.platform != "linux", reason="PermissionError in windows")
+def test_compare(image_diff):
+    image: Union[Image, str, bytes] = make_test_image()
+    tf = tempfile.NamedTemporaryFile(suffix=".jpeg")
+    # FIXME PermissionError: in windows
+    image_save(image, tf.name)
+    image2: Union[Image, str, bytes] = pathlib.Path(tf.name)
+    image_diff(image, image2)
 
 
 def test_initial_diff(image_diff, image_diff_dir):
