@@ -4,6 +4,7 @@ import shutil
 import typing
 from contextlib import contextmanager
 from tempfile import NamedTemporaryFile
+from pathlib import Path
 
 from PIL.Image import Image
 from _pytest import junitxml
@@ -81,7 +82,7 @@ def get_test_info(
 def image_save(image: ImageFileType, path: typing.Union[str, pathlib.Path]) -> None:
     if isinstance(image, Image):
         image.save(path)
-    elif isinstance(image, str):
+    elif isinstance(image, str | Path):
         if not os.path.exists(image):
             raise ValueError("Image maybe path. Path not exists!")
         shutil.copyfile(image, str(path))
@@ -91,6 +92,9 @@ def image_save(image: ImageFileType, path: typing.Union[str, pathlib.Path]) -> N
             shutil.copyfileobj(
                 image, f
             )  # type: ignore # Workaround for python/mypy#8962
+    elif isinstance(image, bytes):
+        with open(path, "wb") as f:
+            f.write(image)
     else:
         raise NotImplementedError()
 
