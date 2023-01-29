@@ -6,7 +6,12 @@ from _pytest.fixtures import FixtureRequest
 from _pytest.python import Function
 from _pytest.runner import CallInfo
 
-from ._types import ImageFileType, ImageRegressionCallableType, ImageDiffCallableType
+from ._types import (
+    ImageFileType,
+    ImageRegressionCallableType,
+    ImageDiffCallableType,
+    PathType,
+)
 from .helpers import get_test_info, build_filename, image_save, ensure_dirs, temp_file
 from .image_diff import _diff
 
@@ -45,7 +50,7 @@ def image_diff_throw_exception() -> bool:
 
 
 @pytest.fixture(scope="session")
-def image_diff_root(request: FixtureRequest) -> str:
+def image_diff_root(request: FixtureRequest) -> PathType:
     """
     Root path for storing diff images. By default - `request.config.rootdir`
     """
@@ -53,7 +58,7 @@ def image_diff_root(request: FixtureRequest) -> str:
 
 
 @pytest.fixture(scope="session")  # pragma: no cover
-def image_diff_dir(image_diff_root: str) -> str:
+def image_diff_dir(image_diff_root: str) -> PathType:
     """
     Path for store diff images. by default - '{image_diff_root}.tests/image_diff/'
     """
@@ -61,7 +66,7 @@ def image_diff_dir(image_diff_root: str) -> str:
 
 
 @pytest.fixture(scope="session")
-def image_diff_reference_dir(image_diff_root: str) -> str:
+def image_diff_reference_dir(image_diff_root: str) -> PathType:
     """
     Path for store reference images
     """

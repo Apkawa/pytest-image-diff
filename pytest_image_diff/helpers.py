@@ -4,13 +4,12 @@ import shutil
 import typing
 from contextlib import contextmanager
 from tempfile import NamedTemporaryFile
-from pathlib import Path
 
 from PIL.Image import Image
 from _pytest import junitxml
 from _pytest.fixtures import FixtureRequest
 
-from pytest_image_diff._types import ImageFileType
+from pytest_image_diff._types import ImageFileType, PathType
 
 
 def build_filename(
@@ -79,10 +78,10 @@ def get_test_info(
     return TestInfo.get_test_info(request, suffix, prefix)
 
 
-def image_save(image: ImageFileType, path: typing.Union[str, pathlib.Path]) -> None:
+def image_save(image: ImageFileType, path: PathType) -> None:
     if isinstance(image, Image):
         image.save(path)
-    elif isinstance(image, str | Path):
+    elif isinstance(image, (str, pathlib.Path)):
         if not os.path.exists(image):
             raise ValueError("Image maybe path. Path not exists!")
         shutil.copyfile(image, str(path))
