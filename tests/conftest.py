@@ -20,4 +20,4 @@ def image_diff_dir(image_diff_root: str) -> PathType:
     """
     Path for store diff images. by default - '{image_diff_root}.tests/image_diff/'
     """
-    return pathlib.Path(image_diff_root) / ".tests/image_diff/"
+    return pathlib.Path(image_diff_root) / ".tests" / "image_diff"
