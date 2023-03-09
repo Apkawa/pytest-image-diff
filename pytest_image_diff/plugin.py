@@ -1,4 +1,5 @@
 import os
+import re
 from typing import Optional, NamedTuple, cast, Callable, Generator, Union
 
 import pytest
@@ -62,7 +63,7 @@ def image_diff_dir(image_diff_root: str) -> PathType:
     """
     Path for store diff images. by default - '{image_diff_root}.tests/image_diff/'
     """
-    return os.path.join(image_diff_root, ".tests/image_diff/")
+    return os.path.join(image_diff_root, ".tests", "image_diff")
 
 
 @pytest.fixture(scope="session")
@@ -123,8 +124,8 @@ def _image_diff_info(
 
     def _factory(image: ImageFileType, suffix: Optional[str] = None) -> DiffInfo:
         test_info = get_test_info(request)
-        class_name = test_info.class_name
-        test_name = test_info.test_name
+        class_name = re.sub(r'[^\w_. -]', '_', test_info.class_name)
+        test_name = re.sub(r'[^\w_. -]', '_', test_info.test_name)
         if suffix is None:
             # Todo enumerate every call
             suffix = ""
