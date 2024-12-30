@@ -28,7 +28,7 @@ author = "Apkawa <apkawa@gmail.com"
 # The short X.Y version
 version = "0.0"
 # The full version, including alpha/beta/rc tags
-release = "0.0.11"
+release = "0.0.12"
 
 # -- General configuration ---------------------------------------------------
 
