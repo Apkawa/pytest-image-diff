@@ -1,11 +1,17 @@
 from io import BytesIO
-from typing import cast
+from typing import cast, Union
 
 from PIL import Image
 from diffimg import diff
 from imgdiff import simple_highlight, tile_images
 
-from pytest_image_diff._types import PathOrFileType, ImageSize, OrientationType
+from pytest_image_diff._types import (
+    PathOrFileType,
+    ImageSize,
+    OrientationType,
+    ColorModeType,
+    ImageType,
+)
 
 
 class ImgDiffOpts:
@@ -20,7 +26,7 @@ class ImgDiffOpts:
 
 def make_highlights(
     ref_path: PathOrFileType, image_path: PathOrFileType, diff_path: PathOrFileType
-) -> Image:
+) -> ImageType:
     ref_img = Image.open(ref_path).convert("RGB")
     img = Image.open(image_path).convert("RGB")
     opts = ImgDiffOpts()
@@ -30,7 +36,7 @@ def make_highlights(
     return img
 
 
-def resize_canvas(im: Image, new_size: ImageSize) -> BytesIO:
+def resize_canvas(im: ImageType, new_size: ImageSize) -> BytesIO:
     new_image = Image.new(im.mode, new_size, (255, 0, 255))
     new_image.paste(im, (0, 0, *im.size))
     fp = BytesIO()
@@ -39,8 +45,30 @@ def resize_canvas(im: Image, new_size: ImageSize) -> BytesIO:
     return fp
 
 
+ALPHA_COLOR = (255, 0, 255)  # Magenta
+
+
+def convert_color_mode(
+    im: ImageType,
+    color_mode: ColorModeType,
+    alpha_color: tuple[int, int, int] = ALPHA_COLOR,
+) -> Union[ImageType, None]:
+    if im.mode == color_mode:
+        return None
+    im = im.convert("RGBA")
+    background = Image.new("RGBA", im.size, alpha_color)
+
+    alpha_image = Image.alpha_composite(im, background).convert(color_mode)
+
+    return alpha_image
+
+
 def _diff(
-    ref_path: PathOrFileType, image_path: PathOrFileType, diff_path: PathOrFileType
+    ref_path: PathOrFileType,
+    image_path: PathOrFileType,
+    diff_path: PathOrFileType,
+    color_mode: Union[ColorModeType, None] = None,
+    alpha_color: tuple[int, int, int] = ALPHA_COLOR,
 ) -> float:
     ref_im = Image.open(ref_path)
     im = Image.open(image_path)
@@ -67,6 +95,17 @@ def _diff(
             ref_path = resize_canvas(ref_im, _ref_new_size)
         if im.size != im_new_size:
             image_path = resize_canvas(im, _im_new_size)
+
+    if color_mode:
+        # Normalization color_mode
+        _ref_im = convert_color_mode(
+            ref_im, color_mode=color_mode, alpha_color=alpha_color
+        )
+        _im = convert_color_mode(im, color_mode=color_mode, alpha_color=alpha_color)
+        if _ref_im:
+            _ref_im.save(ref_path)
+        if _im:
+            _im.save(image_path)
 
     threshold: float = diff(
         ref_path, image_path, delete_diff_file=True, ignore_alpha=True

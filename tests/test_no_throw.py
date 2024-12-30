@@ -5,10 +5,11 @@ import shutil
 import string
 
 import pytest
+from PIL.Image import Image as ImageType
 from PIL import Image, ImageDraw
 
 
-def make_test_image(text="Hello world", size=(100, 30)) -> Image:
+def make_test_image(text="Hello world", size=(100, 30)) -> ImageType:
     img = Image.new("RGB", size, color=(73, 109, 137))
 
     d = ImageDraw.Draw(img)

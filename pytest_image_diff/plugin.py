@@ -12,9 +12,11 @@ from ._types import (
     ImageRegressionCallableType,
     ImageDiffCallableType,
     PathType,
+    ImageDiffColorModeType,
+    ColorType,
 )
 from .helpers import get_test_info, build_filename, image_save, ensure_dirs, temp_file
-from .image_diff import _diff
+from .image_diff import _diff, ALPHA_COLOR
 
 try:
     from .splinter import screenshot_regression  # noqa
@@ -74,6 +76,22 @@ def image_diff_reference_dir(image_diff_root: str) -> PathType:
     return os.path.join(image_diff_root, "image_diff_reference")
 
 
+@pytest.fixture(scope="session")
+def image_diff_color_mode() -> ImageDiffColorModeType:
+    """
+    Normalize color mode. RGB, RGBA, None. Default None - do nothing
+    """
+    return None
+
+
+@pytest.fixture(scope="session")
+def image_diff_alpha_color() -> ColorType:
+    """
+    For alpha channel use fake color
+    """
+    return ALPHA_COLOR
+
+
 class DiffInfo(NamedTuple):
     diff_name: str
     image_name: str
@@ -124,8 +142,8 @@ def _image_diff_info(
 
     def _factory(image: ImageFileType, suffix: Optional[str] = None) -> DiffInfo:
         test_info = get_test_info(request)
-        class_name = re.sub(r'[^\w_. -]', '_', test_info.class_name)
-        test_name = re.sub(r'[^\w_. -]', '_', test_info.test_name)
+        class_name = re.sub(r"[^\w_. -]", "_", test_info.class_name)
+        test_name = re.sub(r"[^\w_. -]", "_", test_info.test_name)
         if suffix is None:
             # Todo enumerate every call
             suffix = ""
@@ -154,6 +172,8 @@ def image_regression(
     _image_diff_info: DiffInfoCallableType,
     image_diff_threshold: float,
     image_diff_throw_exception: bool,
+    image_diff_color_mode: ImageDiffColorModeType,
+    image_diff_alpha_color: ColorType,
 ) -> Generator[ImageRegressionCallableType, None, None]:
     """
     Check regression image.
@@ -169,11 +189,19 @@ def image_regression(
         threshold: Optional[float] = None,
         suffix: Optional[str] = None,
         throw_exception: Optional[bool] = None,
+        color_mode: Optional[ImageDiffColorModeType] = None,
+        alpha_color: Optional[ColorType] = None,
     ) -> "DiffCompareResult":
         if threshold is None:
             threshold = image_diff_threshold
         if throw_exception is None:
             throw_exception = image_diff_throw_exception
+
+        if color_mode is None:
+            color_mode = image_diff_color_mode
+        if alpha_color is None:
+            alpha_color = image_diff_alpha_color
+
         diff_info = _image_diff_info(image, suffix)
         reference_name = diff_info.reference_name
         diff_name = diff_info.diff_name
@@ -200,7 +228,13 @@ def image_regression(
         ensure_dirs(diff_name)
         ensure_dirs(image_name)
         image_save(image, image_name)
-        diff_ratio = _diff(reference_name, image_name, diff_name)
+        diff_ratio = _diff(
+            reference_name,
+            image_name,
+            diff_name,
+            color_mode=color_mode,
+            alpha_color=alpha_color,
+        )
         cond = DiffCompareResult(diff_ratio, threshold, diff_name)
         if throw_exception:
             assert cond, "Image not equals!"  # noqa
@@ -215,6 +249,8 @@ def image_diff(
     _image_diff_info: DiffInfoCallableType,
     image_diff_threshold: float,
     image_diff_throw_exception: bool,
+    image_diff_color_mode: ImageDiffColorModeType,
+    image_diff_alpha_color: ColorType,
 ) -> Generator[ImageDiffCallableType, None, None]:
     """
     Compare two image
@@ -232,11 +268,18 @@ def image_diff(
         threshold: Optional[float] = None,
         suffix: Optional[str] = None,
         throw_exception: Optional[bool] = None,
+        color_mode: Optional[ImageDiffColorModeType] = None,
+        alpha_color: Optional[ColorType] = None,
     ) -> DiffCompareResult:
         if threshold is None:
             threshold = image_diff_threshold
         if throw_exception is None:
             throw_exception = image_diff_throw_exception
+
+        if color_mode is None:
+            color_mode = image_diff_color_mode
+        if alpha_color is None:
+            alpha_color = image_diff_alpha_color
 
         _info = _image_diff_info(image, suffix)
         diff_path = cast(str, _info.diff_name)
@@ -253,12 +296,18 @@ def image_diff(
 
         request.addfinalizer(_cleanup)
 
-        with temp_file(suffix=".jpg") as image_temp_file, temp_file(
-            suffix=".jpg"
+        with temp_file(suffix=".png") as image_temp_file, temp_file(
+            suffix=".png"
         ) as image_2_temp_file:
             image_save(image, path=image_temp_file)
             image_save(image_2, path=image_2_temp_file)
-            diff_ratio = _diff(image_temp_file, image_2_temp_file, diff_path)
+            diff_ratio = _diff(
+                image_temp_file,
+                image_2_temp_file,
+                diff_path,
+                color_mode=color_mode,
+                alpha_color=alpha_color,
+            )
         cond = DiffCompareResult(diff_ratio, threshold, diff_path)
         if throw_exception:
             assert cond, "Image not equals! See %s" % diff_path  # noqa

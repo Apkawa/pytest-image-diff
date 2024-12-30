@@ -1,16 +1,20 @@
 import pathlib
-from typing import BinaryIO, Union, Tuple, Optional, TYPE_CHECKING
-from typing_extensions import Literal, Protocol
+from typing import BinaryIO, Union, Tuple, Optional, TYPE_CHECKING, Literal
+from typing_extensions import Protocol
 
-from PIL.Image import Image
+
+from PIL.Image import Image as ImageType
 
 if TYPE_CHECKING:
     from .plugin import DiffCompareResult
 
 PathType = Union[str, pathlib.Path]
 PathOrFileType = Union[PathType, bytes, BinaryIO]
-ImageFileType = Union[Image, PathOrFileType]
+ImageFileType = Union[ImageType, PathOrFileType]
 ImageSize = Tuple[int, int]
+ColorModeType = Literal["RGB", "RGBA"]
+ImageDiffColorModeType = Union[ColorModeType, None]
+ColorType = tuple[int, int, int]
 
 
 class ImageRegressionCallableType(Protocol):
@@ -20,6 +24,8 @@ class ImageRegressionCallableType(Protocol):
         threshold: Optional[float] = None,
         suffix: Optional[str] = None,
         throw_exception: Optional[bool] = None,
+        color_mode: Optional[ImageDiffColorModeType] = None,
+        alpha_color: Optional[ColorType] = None,
     ) -> "DiffCompareResult":
         pass
 
@@ -32,6 +38,8 @@ class ImageDiffCallableType(Protocol):
         threshold: Optional[float] = None,
         suffix: Optional[str] = None,
         throw_exception: Optional[bool] = None,
+        color_mode: Optional[ImageDiffColorModeType] = None,
+        alpha_color: Optional[ColorType] = None,
     ) -> "DiffCompareResult":
         pass
 

@@ -12,7 +12,7 @@ repos:
       - id: trailing-whitespace
 
   - repo: https://github.com/psf/black
-    rev: 19.3b0
+    rev: 22.12.0
     hooks:
       - id: black
   - repo: local
@@ -20,7 +20,7 @@ repos:
       - id: pytest
         name: pytest
         language: system
-        entry: tox -e py3
+        entry: tox -e py311
         pass_filenames: false
         always_run: true
       - id: flake8

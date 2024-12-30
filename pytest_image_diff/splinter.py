@@ -16,7 +16,7 @@ except ImportError:
     Browser = None
 
 if Browser:
-    from ._types import ImageRegressionCallableType
+    from ._types import ImageRegressionCallableType, ImageDiffColorModeType, ColorType
 
     __all__ = ["screenshot_regression"]
 
@@ -27,6 +27,9 @@ if Browser:
             threshold: Optional[float] = None,
             suffix: Optional[str] = None,
             xpath: Optional[str] = "",
+            throw_exception: Optional[bool] = None,
+            color_mode: Optional[ImageDiffColorModeType] = None,
+            alpha_color: Optional[ColorType] = None,
         ) -> "DiffCompareResult":
             pass
 
@@ -36,6 +39,8 @@ if Browser:
         image_regression: ImageRegressionCallableType,
         image_diff_threshold: float,
         image_diff_throw_exception: bool,
+        image_diff_color_mode: ImageDiffColorModeType,
+        image_diff_alpha_color: ColorType,
     ) -> Generator[ScreenshotRegressionCallableType, None, None]:
         """
         Check regression browser screenshot
@@ -54,6 +59,8 @@ if Browser:
             suffix: Optional[str] = "",
             xpath: Optional[str] = "",
             throw_exception: Optional[bool] = None,
+            color_mode: Optional[ImageDiffColorModeType] = None,
+            alpha_color: Optional[ColorType] = None,
         ) -> "DiffCompareResult":
             if browser is None:
                 browser = default_browser
@@ -63,6 +70,11 @@ if Browser:
 
             if throw_exception is None:
                 throw_exception = image_diff_throw_exception
+
+            if color_mode is None:
+                color_mode = image_diff_color_mode
+            if alpha_color is None:
+                alpha_color = image_diff_alpha_color
 
             with temp_file(suffix=".png") as temp_image_path:
                 screenshot_path = os.fspath(temp_image_path)
@@ -84,7 +96,12 @@ if Browser:
                     browser.driver.save_screenshot(screenshot_path)
 
                 result = image_regression(
-                    screenshot_path, threshold, suffix, throw_exception=throw_exception
+                    screenshot_path,
+                    threshold,
+                    suffix,
+                    throw_exception=throw_exception,
+                    color_mode=color_mode,
+                    alpha_color=alpha_color,
                 )
                 return result
 
