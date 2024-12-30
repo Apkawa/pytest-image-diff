@@ -1,5 +1,5 @@
 from io import BytesIO
-from typing import cast, Union
+from typing import cast, Union, Optional
 
 from PIL import Image
 from diffimg import diff
@@ -11,6 +11,7 @@ from pytest_image_diff._types import (
     OrientationType,
     ColorModeType,
     ImageType,
+    ColorType,
 )
 
 
@@ -51,12 +52,12 @@ ALPHA_COLOR = (255, 0, 255)  # Magenta
 def convert_color_mode(
     im: ImageType,
     color_mode: ColorModeType,
-    alpha_color: tuple[int, int, int] = ALPHA_COLOR,
+    alpha_color: Optional[ColorType] = ALPHA_COLOR,
 ) -> Union[ImageType, None]:
     if im.mode == color_mode:
         return None
     im = im.convert("RGBA")
-    background = Image.new("RGBA", im.size, alpha_color)
+    background = Image.new("RGBA", im.size, alpha_color or ALPHA_COLOR)
 
     alpha_image = Image.alpha_composite(im, background).convert(color_mode)
 
