@@ -4,7 +4,7 @@ import sys
 
 from setuptools import setup, find_packages
 
-version = "0.0.12"
+version = "0.0.13"
 
 if sys.argv[-1] == "publish":
     try:
