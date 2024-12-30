@@ -14,7 +14,7 @@ ImageFileType = Union[ImageType, PathOrFileType]
 ImageSize = Tuple[int, int]
 ColorModeType = Literal["RGB", "RGBA"]
 ImageDiffColorModeType = Union[ColorModeType, None]
-ColorType = tuple[int, int, int]
+ColorType = Tuple[int, int, int]
 
 
 class ImageRegressionCallableType(Protocol):
