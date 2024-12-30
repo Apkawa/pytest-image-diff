@@ -69,7 +69,7 @@ def _diff(
     image_path: PathOrFileType,
     diff_path: PathOrFileType,
     color_mode: Union[ColorModeType, None] = None,
-    alpha_color: tuple[int, int, int] = ALPHA_COLOR,
+    alpha_color: ColorType = ALPHA_COLOR,
 ) -> float:
     ref_im = Image.open(ref_path)
     im = Image.open(image_path)
