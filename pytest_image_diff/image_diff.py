@@ -59,7 +59,8 @@ def convert_color_mode(
     im = im.convert("RGBA")
     background = Image.new("RGBA", im.size, alpha_color or ALPHA_COLOR)
 
-    alpha_image = Image.alpha_composite(im, background).convert(color_mode)
+    alpha_image = Image.alpha_composite(background, im)
+    alpha_image = alpha_image.convert(color_mode)
 
     return alpha_image
 
